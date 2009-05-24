@@ -10,8 +10,9 @@ my $builder = Module::Build->new(
     requires => {
         'Test::More' => 0,
         'version'    => 0,
-	'CGI' => 0,
-	'LWP' => 0,
+		'CGI'        => 0,
+        'LWP'        => 0,
+        'Carp'       => 0,
     },
     add_to_cleanup      => [ 'TRD-WebRelayMail-*' ],
 );

@@ -11,14 +11,13 @@ use LWP;
 #$TRD::DebugLog::file = '/tmp/ichi.log';
 
 use version;
-our $VERSION = qv('0.0.3');
+our $VERSION = qv('0.0.4');
 
 =head1 FUNCTIONS
 
 =head2 new
 
-	new Constructor.
-
+	TRD::WebRelayMailオブジェクトを作成するコンストラクタです。
 	my $relaymail = new TRD::WebRelayMail;
 
 =cut
@@ -33,11 +32,11 @@ sub new {
 	}, $pkg;
 };
 
-=head2 setSendUrl( <url> )
+=head2 setSendUrl( $url )
 
-	set send url.
-
+	リレー先URLを設定します。
 	$relaymail->setSendUrl( 'http://foobar/relay/rmail.cgi' );
+	リレー先のcgiには、TRD::WebRelayMail->Recv()を使用します。
 
 =cut
 #======================================================================
@@ -49,11 +48,11 @@ sub setSendUrl
 	$self->{params}->{sendUrl} = $sendurl;
 }
 
-=head2 setProxy( proxy url )
+=head2 setProxy( $proxy )
 
-	set proxy url.
-
+	リレー先URLへ接続する際のProxyを設定します。
 	$relaymail->setProxy( 'http://proxy.foobar:8080/' );
+	TRD::WebRelayMain->Send()を使用する際にProxyを使用します。
 
 =cut
 #======================================================================
@@ -65,14 +64,13 @@ sub setProxy
 	$self->{params}->{proxy} = $proxy;
 }
 
-=head2 Send( <mail message> )
+=head2 Send( $message )
 
-	send mail message.
-
+	リレーメールを送信します。
 	my $res = $relaymail->Send( $mime->stringify );
 
-	$res = 1 send ok.
-	     !=1 error
+	$messageは、MIME::Entityで作成された物を使用します。
+	返り値は、=1 送信完了。!=1 エラー。
 
 =cut
 #======================================================================
@@ -114,7 +112,11 @@ sub Send
 	return $res;
 }
 
-=head2 Recv( CGI )
+=head2 Recv( $cgi )
+
+	リレーメールを受信します。
+	$cgiはCGIを設定します。
+	TRD::WebRelayMail->setSendUrlで設定した受信cgiで使用します。
 
 =cut
 #======================================================================
@@ -139,7 +141,10 @@ sub Recv
 	return $data;
 }
 
-=head2 url_encode( str )
+=head2 url_encode( $str )
+
+	文字列をURLエンコードします。
+	$str = $relaymail->url_encode( $str );
 
 =cut
 #======================================================================
@@ -158,17 +163,16 @@ __END__
 
 =head1 NAME
 
-TRD::WebRelayMail - [One line description of module's purpose here]
-
+TRD::WebRelayMail - メールを送れないホストからのWebメールリレーモジュール
 
 =head1 VERSION
 
-This document describes TRD::WebRelayMail version 0.0.1
+This document describes TRD::WebRelayMail version 0.0.4
 
 
 =head1 SYNOPSIS
 
-	# sender
+	# 送信用
 	use strict;
 	use Jcode;
 	use MIME::Entity;
@@ -201,18 +205,30 @@ This document describes TRD::WebRelayMail version 0.0.1
 
 	#[EOT]
 
-	# receiver
+	# 受信用
 	use strict;
 	use CGI;
+	use TRD::WebRelayMail;
 
-	hogehoge
+	my $cgi = new CGI;
+	my $relaymail = new TRD::WebRelayMail();
 
-=for author to fill in:
-    Brief code example(s) here showing commonest usage(s).
-    This section will be as far as many users bother reading
-    so make it as educational and exeplary as possible.
-  
-  
+	my $data = $relaymail->Recv( $cgi );
+
+	if( !$data->{'res'} ){
+		print "Content-type: text/html\n\n";
+		print "ng";
+	} else {
+		print "Content-type: text/html\n\n";
+		print "ok";
+
+		open( my $m, "| /usr/sbin/sendmail -t" );
+		print $m $data->{'message'};
+		close( $m );
+	}
+
+	# [EOT]
+
 =head1 DESCRIPTION
 
 =for author to fill in:
