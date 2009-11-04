@@ -14,6 +14,7 @@ WriteMakefile(
 		'Carp'       => 0,
 		'CGI'        => 0,
 		'LWP'        => 0,
+		'Test::Perl::Critic' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'TRD-WebRelayMail-*' },

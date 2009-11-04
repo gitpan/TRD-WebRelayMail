@@ -11,7 +11,7 @@ use LWP;
 #$TRD::DebugLog::file = '/tmp/ichi.log';
 
 use version;
-our $VERSION = qv('0.0.4');
+our $VERSION = qv('0.0.5');
 
 =head1 FUNCTIONS
 

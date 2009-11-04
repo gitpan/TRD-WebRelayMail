@@ -13,6 +13,7 @@ my $builder = Module::Build->new(
 		'CGI'        => 0,
         'LWP'        => 0,
         'Carp'       => 0,
+		'Test::Perl::Critic' => 0,
     },
     add_to_cleanup      => [ 'TRD-WebRelayMail-*' ],
 );
